@@ -4,7 +4,7 @@ import math
 import random
 
 import ps2_visualize
-import pylab
+#import pylab
 
 ##################
 # Comment/uncomment the relevant lines, depending on which version of Python you have
@@ -393,7 +393,8 @@ def showPlot2(title, x_label, y_label):
 # 1) Write a function call to showPlot1 that generates an appropriately-labeled
 #     plot.
 #
-showPlot1("title", "xLabel", "yLabel")
+# PYLAB DOES NOT WORK :/
+#showPlot1("title", "xLabel", "yLabel")
 
 #
 # 2) Write a function call to showPlot2 that generates an appropriately-labeled
