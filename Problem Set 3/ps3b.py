@@ -182,9 +182,22 @@ def simulationWithoutDrug(numViruses, maxPop, maxBirthProb, clearProb,
     clearProb: Maximum clearance probability (a float between 0-1)
     numTrials: number of simulation runs to execute (an integer)
     """
-
-    # TODO
-
+    means = []
+    patient = Patient([], maxPop)
+    #add numViruses viruses to patient:
+    for i in range(numViruses):
+        patient.viruses.append(SimpleVirus(maxBirthProb, clearProb))
+    for i in range(300):
+        values = []
+        for j in range(numTrials):
+            values.append(patient.update())
+        means.append(sum(values) / len(values))
+    # pylab.plot(means, label = "SimpleVirus")
+    # pylab.title("SimpleVirus simulation")
+    # pylab.xlabel("Time Steps")
+    # pylab.ylabel("Average Virus Population")
+    # pylab.legend(loc = "best")
+    # pylab.show()
 
 
 #
@@ -212,21 +225,22 @@ class ResistantVirus(SimpleVirus):
         mutProb: Mutation probability for this virus particle (a float). This is
         the probability of the offspring acquiring or losing resistance to a drug.
         """
-
-        # TODO
+        SimpleVirus.__init__(self, maxBirthProb, clearProb)
+        self.resistances = resistances
+        self.mutProb = mutProb
 
 
     def getResistances(self):
         """
         Returns the resistances for this virus.
         """
-        # TODO
+        return self.resistances
 
     def getMutProb(self):
         """
         Returns the mutation probability for this virus.
         """
-        # TODO
+        return self.mutProb
 
     def isResistantTo(self, drug):
         """
@@ -239,11 +253,12 @@ class ResistantVirus(SimpleVirus):
         returns: True if this virus instance is resistant to the drug, False
         otherwise.
         """
-        
-        # TODO
+        try:
+            return self.resistances[drug]
+        except KeyError:
+            return False
 
-
-    def reproduce(self, popDensity, activeDrugs):
+    def reproduce(self, popDensity, activeDrugs=[]):
         """
         Stochastically determines whether this virus particle reproduces at a
         time step. Called by the update() method in the TreatedPatient class.
@@ -287,8 +302,27 @@ class ResistantVirus(SimpleVirus):
         maxBirthProb and clearProb values as this virus. Raises a
         NoChildException if this virus particle does not reproduce.
         """
-
-        # TODO
+        def switch(bool):
+            if bool is True:
+                return False
+            return True
+        def checkResistance(drugs):
+            for drug in drugs:
+                if not self.isResistantTo(drug):
+                    return False
+            else:
+                return True
+        doesReproduce = checkResistance(activeDrugs) and \
+            random.random() < (self.maxBirthProb * (1-popDensity))
+        if doesReproduce:
+            child_virus = ResistantVirus(self.maxBirthProb, self.clearProb, self.resistances, self.mutProb)
+            for k in child_virus.resistances.keys():
+                if random.random() < self.mutProb:
+                    child_virus.resistances[k] = switch(child_virus.resistances[k])
+                else:
+                    continue
+            return child_virus
+        raise NoChildException
 
             
 
@@ -309,8 +343,8 @@ class TreatedPatient(Patient):
 
         maxPop: The  maximum virus population for this patient (an integer)
         """
-
-        # TODO
+        Patient.__init__(self, viruses, maxPop)
+        self.activeDrugs = []
 
 
     def addPrescription(self, newDrug):
@@ -323,8 +357,8 @@ class TreatedPatient(Patient):
 
         postcondition: The list of drugs being administered to a patient is updated
         """
-
-        # TODO
+        if newDrug not in self.activeDrugs:
+            self.activeDrugs.append(newDrug)
 
 
     def getPrescriptions(self):
@@ -334,14 +368,13 @@ class TreatedPatient(Patient):
         returns: The list of drug names (strings) being administered to this
         patient.
         """
-
-        # TODO
+        return self.activeDrugs
 
 
     def getResistPop(self, drugResist):
         """
         Get the population of virus particles resistant to the drugs listed in
-        drugResist.       
+        drugResist.
 
         drugResist: Which drug resistances to include in the population (a list
         of strings - e.g. ['guttagonol'] or ['guttagonol', 'srinol'])
@@ -349,8 +382,17 @@ class TreatedPatient(Patient):
         returns: The population of viruses (an integer) with resistances to all
         drugs in the drugResist list.
         """
-
-        # TODO
+        result = 0
+        for virus in self.viruses:
+            for drug in drugResist:
+                if virus.isResistantTo(drug):
+                    continue
+                else:
+                    result -= 1  # little hack to compensate the 'result += 1' line after the break
+                    break
+            result += 1
+        return result
+            
 
 
     def update(self):
