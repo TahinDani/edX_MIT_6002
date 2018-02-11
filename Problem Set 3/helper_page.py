@@ -12,13 +12,16 @@ random.seed(0)
 #print(simulationWithoutDrug(1, 10, 1.0, 0.0, 1))
 
 
-def switch(bool):
-    if bool is True:
-        return False
-    return True
+# def switch(bool):
+#     if bool is True:
+#         return False
+#     return True
 
-dict = {'a': True, 'b': True, 'c': True}
-for k in dict.keys():
-    dict[k] = switch(dict[k])
+# dict = {'a': True, 'b': True, 'c': True}
+# for k in dict.keys():
+#     dict[k] = switch(dict[k])
 
-print(dict)
+# print(dict)
+
+
+simulationWithDrug(1, 10, 1.0, 0.0, {}, 1.0, 5)

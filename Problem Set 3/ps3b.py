@@ -415,9 +415,18 @@ class TreatedPatient(Patient):
         returns: The total virus population at the end of the update (an
         integer)
         """
-
-        # TODO
-
+        viruses_copy = self.viruses[:]
+        for virus in viruses_copy:
+            popDensity = self.getTotalPop() / self.getMaxPop()
+            if not virus.doesClear():
+                if popDensity < 1:
+                    try:
+                        self.viruses.append(virus.reproduce(popDensity, self.activeDrugs))
+                    except NoChildException:
+                        continue
+            else:
+                self.viruses.remove(virus)
+        return self.getTotalPop()
 
 
 #
@@ -445,5 +454,4 @@ def simulationWithDrug(numViruses, maxPop, maxBirthProb, clearProb, resistances,
     numTrials: number of simulation runs to execute (an integer)
     
     """
-
     # TODO
