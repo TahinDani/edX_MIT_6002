@@ -33,10 +33,13 @@ INTERVAL_2 = list(range(2006, 2016))
 """
 Begin helper code
 """
+
+
 class Climate(object):
     """
     The collection of temperature records loaded from given csv file
     """
+
     def __init__(self, filename):
         """
         Initialize a Climate instance, which stores the temperature records
@@ -52,7 +55,8 @@ class Climate(object):
         for line in f:
             items = line.strip().split(',')
 
-            date = re.match('(\d\d\d\d)(\d\d)(\d\d)', items[header.index('DATE')])
+            date = re.match('(\d\d\d\d)(\d\d)(\d\d)',
+                            items[header.index('DATE')])
             year = int(date.group(1))
             month = int(date.group(2))
             day = int(date.group(3))
@@ -66,7 +70,7 @@ class Climate(object):
             if month not in self.rawdata[city][year]:
                 self.rawdata[city][year][month] = {}
             self.rawdata[city][year][month][day] = temperature
-            
+
         f.close()
 
     def get_yearly_temp(self, city, year):
@@ -112,12 +116,13 @@ class Climate(object):
         return self.rawdata[city][year][month][day]
 
 
-
 """
 End helper code
 """
 
 # Problem 1
+
+
 def generate_models(x, y, degs):
     """
     Generate regression models by fitting a polynomial for each degree in degs
@@ -137,6 +142,8 @@ def generate_models(x, y, degs):
     return models
 
 # Problem 2
+
+
 def r_squared(y, estimated):
     """
     Calculate the R-squared error term.
@@ -146,10 +153,15 @@ def r_squared(y, estimated):
     Returns:
         a float for the R-squared error term
     """
-    # TODO
-    pass
+    error = 0
+    for i in range(len(y)):
+        error += ((estimated[i] - y[i])**2)
+    mean_error = error / len(y)
+    return 1 - (mean_error/np.var(y))
 
 # Problem 3
+
+
 def evaluate_models_on_training(x, y, models):
     """
     For each regression model, compute the R-square for this model with the
@@ -171,20 +183,27 @@ def evaluate_models_on_training(x, y, models):
     Returns:
         None
     """
-    # TODO
-    pass
+    pylab.plot(x, y, 'bo', label='Data')
+    for i in range(len(models)):
+        estYvals = np.polyval(models[i], x)
+        error = r_squared(y, estYvals)
+        pylab.plot(x, estYvals, 'r', label='Fit of degree 1 ' +
+                   'R^2 = ' + str(round(error, 5)))
+    pylab.legend(loc='best')
+    pylab.title('Temperatures on a day')
 
 
-### Begining of program
-# raw_data = Climate('data.csv')
+# Begining of program
+raw_data = Climate('data.csv')
 
 # # Problem 3
-# y = []
-# x = INTERVAL_1
-# for year in INTERVAL_1:
-#     y.append(raw_data.get_daily_temp('BOSTON', 1, 10, year))
-# models = generate_models(x, y, [1])
-# evaluate_models_on_training(x, y, models)
+y = []
+x = INTERVAL_1
+for year in INTERVAL_1:
+    y.append(raw_data.get_daily_temp('BOSTON', 1, 10, year))
+models = generate_models(x, y, [1])
+evaluate_models_on_training(x, y, models)
+pylab.show()
 
 
 # # Problem 4: FILL IN MISSING CODE TO GENERATE y VALUES
@@ -192,5 +211,5 @@ def evaluate_models_on_training(x, y, models):
 # x2 = INTERVAL_2
 # y = []
 # # MISSING LINES
-# models = generate_models(x, y, [1])    
+# models = generate_models(x, y, [1])
 # evaluate_models_on_training(x, y, models)
