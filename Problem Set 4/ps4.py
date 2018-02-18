@@ -196,20 +196,26 @@ def evaluate_models_on_training(x, y, models):
 # Begining of program
 raw_data = Climate('data.csv')
 
-# # Problem 3
-y = []
-x = INTERVAL_1
-for year in INTERVAL_1:
-    y.append(raw_data.get_daily_temp('BOSTON', 1, 10, year))
-models = generate_models(x, y, [1])
-evaluate_models_on_training(x, y, models)
-pylab.show()
-
-
-# # Problem 4: FILL IN MISSING CODE TO GENERATE y VALUES
-# x1 = INTERVAL_1
-# x2 = INTERVAL_2
+# Problem 3
+# Plots the temperatures on a specific day
 # y = []
-# # MISSING LINES
+# x = INTERVAL_1
+# for year in INTERVAL_1:
+#     y.append(raw_data.get_daily_temp('BOSTON', 1, 10, year))
 # models = generate_models(x, y, [1])
 # evaluate_models_on_training(x, y, models)
+
+
+# Problem 4: FILL IN MISSING CODE TO GENERATE y VALUES
+# Plots the yearly averages
+x1 = INTERVAL_1
+x2 = INTERVAL_2
+y = []
+# missing code begin
+for year in INTERVAL_1:
+    y.append(np.mean(raw_data.get_yearly_temp('BOSTON', year)))
+# missing code end
+models = generate_models(x1, y, [1])
+evaluate_models_on_training(x1, y, models)
+
+pylab.show()
